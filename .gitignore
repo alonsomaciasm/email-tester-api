@@ -1,0 +1,77 @@
+# Environment variables (contains secrets)
+.env
+.env.*
+!.env.example
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Testing, MyPy & Coverage
+.mypy_cache/
+.pytest_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+*.cover
+coverage.xml
+
+# Build, Packaging & Distribution
+build/
+devel/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+*.egg
+
+# IDEs, Editors & System files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs & Temporary files/folders
+*.log
+logs/
+tmp/
+/tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+.scratch/
+
+# Scientific Paper Drafts (Omitted from GitHub)
+docs/scientific_paper_experimental_results.md
+
+# Generated runtime snapshot files
+data/*.bin

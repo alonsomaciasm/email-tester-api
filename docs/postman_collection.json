@@ -1,0 +1,205 @@
+{
+  "info": {
+    "name": "Disposable Email Verification API v1.3.0",
+    "description": "Secure-by-Design and Privacy-by-Design high-performance API for detecting disposable email providers. Supports Granian Rust ASGI, MessagePack binary response, Zstandard compression, ETag HTTP 304 caching, DGA Shannon Entropy detection, Cuckoo Filter, and FastMCP Server.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Verify single email address",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/v1/verify-email",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "v1",
+            "verify-email"
+          ]
+        },
+        "description": "Analyzes email domain across Cuckoo/Bloom filter, Redis MX cache, DNS MX queries, and heuristics. Strictly complies with Privacy by Design.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"user@mailinator.com\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Verify single email (MessagePack Binary Response)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/x-msgpack",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/v1/verify-email",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "v1",
+            "verify-email"
+          ]
+        },
+        "description": "Returns zero-copy binary response using MessagePack serialization (50% smaller payload, 4x faster processing).",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"user@mailinator.com\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Verify single email with ETag (HTTP 304 Not Modified)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "X-Request-ID",
+            "value": "req-static-etag-1",
+            "type": "text"
+          },
+          {
+            "key": "If-None-Match",
+            "value": "W/\"8045899ac6d86fee\"",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/v1/verify-email",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "v1",
+            "verify-email"
+          ]
+        },
+        "description": "Returns HTTP 304 Not Modified with 0-byte payload if response match ETag hash.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"user@gmail.com\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Batch verify multiple emails (Zstandard Compressed)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept-Encoding",
+            "value": "zstd",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/v1/verify-batch",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "v1",
+            "verify-batch"
+          ]
+        },
+        "description": "Verifies batch of up to 100 emails concurrently and compresses response with native C Zstandard (zstd).",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"emails\": [\n    \"user1@gmail.com\",\n    \"user2@mailinator.com\",\n    \"user3@temp-mail.org\",\n    \"user4@outlook.com\",\n    \"user5@gmai.com\"\n  ]\n}"
+        }
+      }
+    },
+    {
+      "name": "System Health Probe (Liveness)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/healthz",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "healthz"
+          ]
+        },
+        "description": "Liveness probe verifying API process is responsive."
+      }
+    },
+    {
+      "name": "System Readiness Probe",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/readyz",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "readyz"
+          ]
+        },
+        "description": "Readiness probe verifying Redis connection and Cuckoo/Bloom filter state."
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "dev_secret_key_change_in_production",
+      "type": "string"
+    }
+  ]
+}

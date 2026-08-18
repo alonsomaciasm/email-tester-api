@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: email_verifier_prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./deploy/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - app_network
+
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: email_verifier_grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./deploy/grafana_dashboard.json:/var/lib/grafana/dashboards/dashboard.json:ro
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    external: true
+    name: email-tester_app_network
