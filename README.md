@@ -109,6 +109,7 @@ docker-compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
 
 ## 7. Evaluación Empírica e Instrumentación para Investigación
 
+- **Contrato Formal de API ([`docs/api_contract.md`](docs/api_contract.md))**: Especificación técnica de la interfaz de la API conforme a los estándares OpenAPI 3.0, RFC 7807 (Problem Details), esquemas JSON/MessagePack, compresión Zstandard, encabezados de privacidad y herramientas MCP.
 - **Suite de Investigación Empírica (`app/tests/empirical_paper_suite.py`)**: Evalúa las tasas teóricas vs. empíricas de falsos positivos ($P_{\text{empírica}} \le P_{\text{objetivo}}$), percentiles de latencia y throughput.
 - **Exportador a LaTeX y Postman**: Exporta `empirical_results.csv`, `empirical_results.tex` y la colección de Postman en `docs/postman_collection.json`.
 
