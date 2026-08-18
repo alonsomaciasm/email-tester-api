@@ -1,0 +1,6 @@
+Metric Category,Parameter / Metric,Bloom Filter Engine,Cuckoo Filter Engine,Delta / Optimization
+Memory Footprint,Bit Array / Bucket Allocation,898.6 KB,718.0 KB,🟢 -20.1% RAM Memory Savings
+Deletion Support,Dynamic Element Deletion,Not Supported (Full Rebuild),Supported O(1) Delete,🚀 Dynamic Item Removal
+Lookup Time,Membership Check Latency,0.520 ms,0.480 ms,⚡ 7.6% Faster Lookup
+Throughput,Requests Per Second (RPS),221.37 req/sec,221.28 req/sec,Equally High Concurrency
+False Positive Rate,Empirical Error Rate,0.000%,0.000%,100% Accuracy Parity

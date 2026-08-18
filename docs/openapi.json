@@ -1,0 +1,503 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Disposable Email Verification API",
+    "description": "Secure-by-Design and Privacy-by-Design high-performance API for detecting disposable email providers.",
+    "version": "1.2.0"
+  },
+  "paths": {
+    "/v1/verify-email": {
+      "post": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "Verify if an email belongs to a disposable provider",
+        "description": "Analyzes email domain across Bloom filter, Redis MX cache, DNS MX queries, and heuristics. Strictly complies with Privacy by Design: email is NEVER returned in the response body or logged. Supports Accept: application/x-msgpack for binary response.",
+        "operationId": "verify_email_v1_verify_email_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Request-Id"
+            }
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailVerifyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailVerifyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/verify-batch": {
+      "post": {
+        "tags": [
+          "Verification"
+        ],
+        "summary": "Batch verify multiple email addresses concurrently",
+        "description": "Processes up to 100 emails concurrently with bounded parallelism. Leverages L1/L2 multi-tier caching for sub-millisecond execution times. Supports Accept: application/x-msgpack for binary response.",
+        "operationId": "verify_email_batch_v1_verify_batch_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Request-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Request-Id"
+            }
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailBatchVerifyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailBatchVerifyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dashboard": {
+      "get": {
+        "tags": [
+          "Dashboard UI"
+        ],
+        "summary": "Cyber Dashboard UI",
+        "description": "Serves the Cyber Glassmorphism Enterprise Dashboard UI.",
+        "operationId": "serve_dashboard_dashboard_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "Dashboard UI"
+        ],
+        "summary": "Cyber Dashboard UI",
+        "description": "Serves the Cyber Glassmorphism Enterprise Dashboard UI.",
+        "operationId": "serve_dashboard__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/healthz": {
+      "get": {
+        "tags": [
+          "System Probes"
+        ],
+        "summary": "Liveness Probe",
+        "description": "Liveness probe indicating process is responsive.",
+        "operationId": "healthz_healthz_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Healthz Healthz Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/readyz": {
+      "get": {
+        "tags": [
+          "System Probes"
+        ],
+        "summary": "Readiness Probe",
+        "description": "Readiness probe verifying Redis connection and Bloom filter state.",
+        "operationId": "readyz_readyz_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/healthz/detailed": {
+      "get": {
+        "tags": [
+          "System Probes"
+        ],
+        "summary": "Detailed Diagnostic & Telemetry Health Probe",
+        "description": "Returns comprehensive telemetry including Redis latency, L1 cache hit-ratio, Bloom Filter, engine backends and DNS Circuit Breaker status.",
+        "operationId": "healthz_detailed_healthz_detailed_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/dataset-info": {
+      "get": {
+        "tags": [
+          "Internal & Research"
+        ],
+        "summary": "Dataset version & reproducibility metadata",
+        "description": "Exposes active dataset version, Bloom filter capacity, item count, hash, and source URLs status.",
+        "operationId": "dataset_info_internal_dataset_info_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Dataset Info Internal Dataset Info Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EmailBatchVerifyRequest": {
+        "properties": {
+          "emails": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Emails",
+            "description": "Batch of RFC 5322 compliant emails to verify (max 100 per request)",
+            "examples": [
+              [
+                "user1@example.com",
+                "user2@mailinator.com"
+              ]
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "emails"
+        ],
+        "title": "EmailBatchVerifyRequest"
+      },
+      "EmailBatchVerifyResponse": {
+        "properties": {
+          "total_processed": {
+            "type": "integer",
+            "title": "Total Processed",
+            "description": "Total emails processed in batch"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/EmailVerifyResponse"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "List of verification responses"
+          },
+          "request_id": {
+            "type": "string",
+            "title": "Request Id",
+            "description": "Unique batch request tracing UUID"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_processed",
+          "results",
+          "request_id"
+        ],
+        "title": "EmailBatchVerifyResponse"
+      },
+      "EmailVerifyRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "title": "Email",
+            "description": "RFC 5322 compliant email address to verify",
+            "examples": [
+              "user@example.com"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "title": "EmailVerifyRequest"
+      },
+      "EmailVerifyResponse": {
+        "properties": {
+          "disposable": {
+            "type": "boolean",
+            "title": "Disposable",
+            "description": "True if email belongs to a disposable email provider"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Confidence",
+            "description": "Confidence rating of classification"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "known_provider",
+              "no_mx",
+              "heuristic",
+              "clean"
+            ],
+            "title": "Reason",
+            "description": "Specific verification tier reason"
+          },
+          "risk_score": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Risk Score",
+            "description": "Numerical risk score from 0 (safe) to 100 (disposable)",
+            "default": 0
+          },
+          "mx_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mx Provider",
+            "description": "Identified infrastructure MX provider"
+          },
+          "did_you_mean": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Did You Mean",
+            "description": "Suggested legitimate domain typo fix if detected"
+          },
+          "request_id": {
+            "type": "string",
+            "title": "Request Id",
+            "description": "Unique request tracing UUID"
+          }
+        },
+        "type": "object",
+        "required": [
+          "disposable",
+          "confidence",
+          "reason",
+          "request_id"
+        ],
+        "title": "EmailVerifyResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "APIKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    }
+  }
+}

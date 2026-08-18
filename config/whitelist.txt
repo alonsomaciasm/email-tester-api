@@ -1,0 +1,5 @@
+# Custom Domain Whitelist (One domain per line)
+# Lines starting with # are comments and will be ignored.
+# Example:
+# mycompany.com
+# partner-organization.org

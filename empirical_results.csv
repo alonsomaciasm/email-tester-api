@@ -1,0 +1,13 @@
+Metric Category,Parameter / Metric,Empirical Value,Unit / Bound
+Bloom Filter,Expected Capacity (N),500000,items
+Bloom Filter,Indexed Items (n),0,domains
+Bloom Filter,Target Error Rate (P_target),0.001,ratio
+Bloom Filter,Empirical False Positive Rate,0.0,ratio
+Bloom Filter,Sensitivity / True Positive Rate,0.0,%
+Bloom Filter,Space Efficiency,14.38,bits / domain
+Latency,Mean Latency,80.349,ms
+Latency,p50 Latency (Median),40.75,ms
+Latency,p90 Latency,172.084,ms
+Latency,p95 Latency,240.965,ms
+Latency,p99 Latency,290.254,ms
+Throughput,Requests Per Second (RPS),81.69,req/sec
