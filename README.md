@@ -11,27 +11,27 @@ Diseñada para despliegues en la nube de producción (VPS / Kubernetes / AWS ECS
 El proceso de verificación sigue un pipeline en cascada de 4 niveles optimizado para ejecución en sub-milisegundos mediante cachés L1/L2 y algoritmos acelerados en C/Rust.
 
 ```mermaid
-graph TD
-    A["Petición del Cliente POST /v1/verify-email o POST /v1/verify-batch"] --> B["Middleware: Contexto de Auditoría, Encabezados de Seguridad y Limitador de Tasa"]
-    B --> C["Extracción de Dominio y Normalización IDNA"]
-    C -->|"La parte local se descarta inmediatamente"| D["Nivel 0: Caché L1 en Memoria LRU (~0.05ms)"]
+flowchart TD
+    A["Peticion POST /v1/verify-email"] --> B["Security & Rate Limit Middleware"]
+    B --> C["Extraccion de Dominio y Normalizacion IDNA"]
+    C --> D["Nivel 0: Cache L1 LRU en Memoria"]
     
-    D -->|"Hit en Caché L1"| E["Respuesta Ultra Rápida desde Memoria Volátil"]
-    D -->|"Miss en Caché L1"| F["Nivel 1: Cuckoo Filter en Memoria RAM con IPC SharedMemory"]
+    D -->|"Hit en Cache L1"| E["Respuesta desde Memoria Volatil"]
+    D -->|"Miss en Cache L1"| F["Nivel 1: Cuckoo Filter O(1) en RAM"]
     
-    F -->|"Coincidencia en Cuckoo ~0.48ms"| G["Respuesta: disposable=true, reason=known_provider, risk_score=100"]
-    F -->|"Sin coincidencia en Cuckoo"| H["Nivel 2: Búsqueda en Caché L2 de MX en Redis (hiredis C-Parser)"]
+    F -->|"Dominio Desechable Encontrado"| G["Respuesta: disposable=true, risk_score=100"]
+    F -->|"Sin Coincidencia en Cuckoo"| H["Nivel 2: Cache L2 Redis Hiredis"]
     
-    H -->|"Coincidencia en Caché ~1.85ms"| I["Evaluar Registros MX en Caché"]
-    H -->|"Sin coincidencia en Caché"| J["Nivel 3: Búsqueda Asíncrona de MX DNS con Escudo SSRF y Circuit Breaker"]
+    H -->|"Hit en Redis"| I["Evaluar Registros MX en Cache"]
+    H -->|"Miss en Redis"| J["Nivel 3: Busqueda Asincrona DNS MX"]
     
-    J -->|"Sin MX / Null MX RFC 7508"| K["Respuesta: disposable=true, reason=no_mx, risk_score=80"]
-    J -->|"MX Encontrado"| L["Guardar MX en RAM L1 y Caché de Redis"]
-    L --> M["Nivel 4: Motor de Heurística, Homógrafos y RapidFuzz C++ Typo Engine"]
+    J -->|"Sin MX / Null MX RFC 7508"| K["Respuesta: disposable=true, risk_score=80"]
+    J -->|"MX Encontrado"| L["Guardar MX en Cache L1 y Redis"]
+    L --> M["Nivel 4: Motor Heuristico, DGA y RapidFuzz C++"]
     I --> M
     
-    M -->|"Coincidencia Heurística o DGA"| N["Respuesta: disposable=true, reason=heuristic, risk_score=85-95"]
-    M -->|"Correo Limpio / Con Sugerencia Typo"| O["Respuesta: disposable=false, reason=clean, risk_score=0-60"]
+    M -->|"Coincidencia Heuristica o DGA"| N["Respuesta: disposable=true, risk_score=85-95"]
+    M -->|"Correo Limpio / Typo Sugerido"| O["Respuesta: disposable=false, risk_score=0-60"]
 ```
 
 - **Compresión Nativa Zstandard (`zstd`)**: Soporte para `Accept-Encoding: zstd` a través de `ZstdCompressionMiddleware`, reduciendo cargas masivas en lote hasta un 70% más que JSON plano.
