@@ -75,3 +75,13 @@ docs/scientific_paper_experimental_results.md
 
 # Generated runtime snapshot files
 data/*.bin
+
+# Empirical paper and research documents
+empirical_results.tex
+empirical_results.csv
+scripts/generate_paper_plots.py
+app/tests/empirical_paper_suite.py
+app/tests/unit/test_empirical_suite.py
+docs/baseline_empirical_results.csv
+docs/cuckoo_vs_bloom_empirical.csv
+docs/scientific_paper_experimental_results.md
